@@ -9,7 +9,6 @@ Route::get('/', function () {
     return view('welcome');
 });
 
-Route::resource('blogs', BlogController::class);
 
 Route::middleware(['guest'])->group(function () {
     Route::get('/register', [AuthController::class, 'showRegister']);
@@ -20,9 +19,11 @@ Route::middleware(['guest'])->group(function () {
 });
 
 Route::middleware(['auth'])->group(function () {
+    Route::resource('blogs', BlogController::class);
+
     Route::get('/blog', function () {
         $user = Auth::user();
-        return view('blog', [
+        return view('blogs', [
             'user' => $user,
         ]);
     })->name('dashboard');

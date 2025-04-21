@@ -4,15 +4,17 @@ namespace App\Http\Controllers;
 
 use App\Models\Blog;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class BlogController extends Controller
 {
+
     /**
      * Display a listing of the resource.
      */
     public function index()
     {
-        $blogs = Blog::latest()->get();
+        $blogs = \App\Models\Blog::where('user_id', Auth::id())->latest()->get();
         return view('blogs.index', compact('blogs'));
     }
 
@@ -29,12 +31,16 @@ class BlogController extends Controller
      */
     public function store(Request $request)
     {
-        $request->validate([
-            'title' => 'required|max:255',
+        $validated = $request->validate([
+            'title' => 'required',
             'body' => 'required',
         ]);
-        Blog::create($request->all());
-        return redirect()->route('blogs.index')->with('success', 'Blog created successfully.');
+
+        $validated['user_id'] = Auth::id();
+
+        \App\Models\Blog::create($validated);
+
+        return redirect()->route('blogs.index')->with('success', 'Blog created!');
     }
 
     /**
